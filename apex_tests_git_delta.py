@@ -6,7 +6,6 @@ import logging
 import os
 import re
 import subprocess
-import sys
 
 
 # Format logging message
