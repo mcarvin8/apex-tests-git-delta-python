@@ -16,14 +16,14 @@ which do not exist on the HEAD reference (`--new` argument).
 
 ### Use Case
 By default, the test classes will be in the proper formatting for the `sfdx` CLI.
-`python3 ./apex_tests_git_delta.py --old "7cdd5548" --new "9b37bb11"`
+`python3 ./apex_tests_git_delta.py -f "7cdd5548" -t "9b37bb11"`
 
 Add `--sf` to format the test classes for the `sf` CLI.
-`python3 ./apex_tests_git_delta.py --old "7cdd5548" --new "9b37bb11" --sf`
+`python3 ./apex_tests_git_delta.py -f "7cdd5548" -t "9b37bb11" --sf`
 
 The output of the script can be captured in a bash variable as such:
 
-`testclasses=$(python3 ./apex_tests_git_delta.py --old "7cdd5548" --new "9b37bb11")`
+`testclasses=$(python3 ./apex_tests_git_delta.py -f "7cdd5548" -t "9b37bb11")`
 
 The `$testclasses` variable then can be used with the `RunSpecifiedTests` parameter of the CLI deployment command.
 

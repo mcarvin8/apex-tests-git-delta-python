@@ -16,13 +16,10 @@ logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 def parse_args():
     """
         Function to pass required arguments.
-        old - previous commit (from)
-        new - newer commit (to)
-        sf - declare if using `sf` CLI
     """
     parser = argparse.ArgumentParser(description='Determine required Apex tests between 2 commits.')
-    parser.add_argument('-o', '--old')
-    parser.add_argument('-n', '--new')
+    parser.add_argument('-f', '--old')
+    parser.add_argument('-t', '--new')
     parser.add_argument('-s', '--sf', default=False, action='store_true')
     args = parser.parse_args()
     return args
