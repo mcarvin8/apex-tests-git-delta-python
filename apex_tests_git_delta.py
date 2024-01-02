@@ -17,9 +17,9 @@ def parse_args():
         Function to pass required arguments.
     """
     parser = argparse.ArgumentParser(description='Determine required Apex tests between 2 commits.')
-    parser.add_argument('-f', '--old')
-    parser.add_argument('-t', '--new')
-    parser.add_argument('-s', '--sf', default=False, action='store_true')
+    parser.add_argument('-f', '--from', dest='from_value')
+    parser.add_argument('-t', '--to', dest='to_value')
+    parser.add_argument('-s', '--sfdx', default=False, action='store_true')
     args = parser.parse_args()
     return args
 
@@ -32,10 +32,9 @@ def parse_test_classes(commit_message):
         test_classes = re.search(r'[Aa][Pp][Ee][Xx]::(.*?)::[Aa][Pp][Ee][Xx]', commit_message, flags=0).group(1)
         if test_classes.isspace() or not test_classes:
             raise AttributeError
-        test_classes = remove_spaces(test_classes)
     except AttributeError:
         test_classes = ''
-    test_classes = test_classes.split(',')
+    test_classes = re.split(r'[,\s]+', test_classes)
     test_dict = {}
     for test_class in test_classes:
         test_dict[test_class] = True
@@ -63,22 +62,14 @@ def validate_test_classes(test_classes, commit):
     return valid_test_classes
 
 
-def remove_spaces(string):
+def replace_with_commas(string):
     """
-        Function to remove extra spaces in a string.
+        Function to replace spaces with a comma.
     """
-    pattern = re.compile(r'\s+')
-    return re.sub(pattern, '', string)
+    return string.replace(' ', ',')
 
 
-def replace_commas(string):
-    """
-        Function to remove commas with a single space.
-    """
-    return re.sub(',', ' ', string)
-
-
-def main(from_ref, to_ref, sf_cli):
+def main(from_ref, to_ref, sfdx):
     """
         Main function.
     """
@@ -94,16 +85,16 @@ def main(from_ref, to_ref, sf_cli):
         test_classes = parse_test_classes(commit_message)
         combined_test_classes.update({test_class: True for test_class in test_classes.split()})
 
-    # Validate test classes are in the to_ref working tree
-    valid_test_classes = ','.join(validate_test_classes(combined_test_classes, to_ref))
+    # Validate test classes are in the `--to` working tree
+    valid_test_classes = ' '.join(validate_test_classes(combined_test_classes, to_ref))
 
-    # Replace commas with spaces for the `sf` CLI
-    if sf_cli:
-        valid_test_classes = replace_commas(valid_test_classes)
+    # Replace spaces with commas for the `sfdx` CLI
+    if sfdx:
+        valid_test_classes = replace_with_commas(valid_test_classes)
     print(valid_test_classes)
 
 
 if __name__ == '__main__':
     inputs = parse_args()
-    main(inputs.old, inputs.new,
-         inputs.sf)
+    main(inputs.from_value, inputs.to_value,
+         inputs.sfdx)
